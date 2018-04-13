@@ -297,6 +297,7 @@ The undo/redo mechanism is facilitated by an `UndoRedoStack`, which resides insi
 
 `UndoRedoStack` only deals with `UndoableCommands`. Commands that cannot be undone will inherit from `Command` instead. The following diagram shows the inheritance diagram for commands:
 
+.Structure of Commands in the Logic Component (see Figure 7)
 image::LogicCommandClassDiagram.png[width="800"]
 
 As you can see from the diagram, `UndoableCommand` adds an extra layer between the abstract `Command` class and concrete commands that can be undone, such as the `DeleteCommand`. Note that extra tasks need to be done when executing a command in an _undoable_ way, such as saving the state of the address book before execution. `UndoableCommand` contains the high-level algorithm for those extra tasks while the child classes implements the details of how to execute the specific command. Note that this technique of putting the high-level algorithm in the parent class and lower-level steps of the algorithm in child classes is also known as the https://www.tutorialspoint.com/design_pattern/template_pattern.htm[template pattern].
@@ -356,6 +357,7 @@ If the `undoStack` is empty, then there are no other commands left to be undone,
 
 The following sequence diagram shows how the undo operation works:
 
+.Interactions Inside the Logic Component for the `undo` Command
 image::UndoRedoSequenceDiagram.png[width="800"]
 
 The redo does the exact opposite (pops from `redoStack`, push to `undoStack`, and restores the address book to the state after the command is executed).
@@ -1326,6 +1328,7 @@ which is a method in `UserPrefs`. +
 
 Below is the sequence diagram for how the `ChangeThemeCommand` works:
 
+.Interactions of the Logic Component with the UI and Model Components for the `changeTheme` Command
 image::ChangeThemeCommandDiagram.png[width="800"]
 
 
@@ -1435,6 +1438,7 @@ public class SetCommand extends Command {
 
 The following sequence diagram shows how the set command operation works:
 
+.Interactions of the Logic Component with the UI and Model Components for the `setTagColour` Command
 image::SetTagCommandSequence.png[width="800"]
 
 ===== Design Considerations
