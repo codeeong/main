@@ -59,6 +59,11 @@ public class TogglePrivacyCommandParser implements Parser<TogglePrivacyCommand> 
         if (argMultimap.getValue(PREFIX_RATING).isPresent()) {
             epp.setPrivateRating(false);
         }
+
+        if (!epp.anyNonNullField()) {
+            throw new ParseException(TogglePrivacyCommand.MESSAGE_NO_FIELDS);
+        }
+
         return new TogglePrivacyCommand(index, epp);
     }
 }

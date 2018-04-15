@@ -65,7 +65,8 @@ public class KeyCommand extends Command {
             }
 
             logger.info("Lock state is now: " + Boolean.toString(model.getLockState()));
-            return new CommandResult(MESSAGE_SUCCESS);
+            return new CommandResult(MESSAGE_SUCCESS + "\nLock state is now: "
+                    + Boolean.toString(model.getLockState()));
         } else {
             throw new CommandException(MESSAGE_WRONG_PASS);
         }

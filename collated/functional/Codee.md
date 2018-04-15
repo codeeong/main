@@ -477,7 +477,7 @@
 ```
 ###### /resources/view/PlayerDetails.fxml
 ``` fxml
-<StackPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9" styleClass="player-details-container">
+<StackPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9" fx:id="playerDetails" styleClass="player-details-container">
     <children>
         <GridPane>
             <columnConstraints>
@@ -546,10 +546,14 @@ public class PlayerDetails extends UiPart<Region> {
 ``` java
     @Subscribe
     private void handlePersonDetailsChangedEvent(PersonDetailsChangedEvent event) {
-        phone.setText(event.getPerson().getPhone().toString());
-        address.setText(event.getPerson().getAddress().toString());
-        email.setText(event.getPerson().getEmail().toString());
-        remark.setText("Remarks: " + event.getPerson().getRemark().toString());
+        if (event.getPerson().getName().fullName.equals(person.getName().fullName)) {
+            name.setText((event.getPerson().getName().toString()));
+            phone.setText(event.getPerson().getPhone().toString());
+            jerseyNumber.setText("Jersey Number: " + event.getPerson().getJerseyNumber().toString());
+            address.setText(event.getPerson().getAddress().toString());
+            email.setText(event.getPerson().getEmail().toString());
+            remark.setText("Remarks: " + event.getPerson().getRemark().toString());
+        }
     }
 }
 
@@ -674,7 +678,7 @@ public class TeamDisplay extends UiPart<Region> {
     }
 
     @Subscribe
-    private void handleUndoClearTeamsEvent(UndoClearTeamsEvent event) {
+    private void handleUndoTeamsEvent(UndoTeamsEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event));
         teams.getChildren().clear();
         initTeams();
@@ -739,13 +743,20 @@ public class TeamDisplay extends UiPart<Region> {
 public class PersonDetailsChangedEvent extends BaseEvent {
 
     private final Person editedPerson;
+    private final Index index;
 
-    public PersonDetailsChangedEvent(Person editedPerson) {
+    public PersonDetailsChangedEvent(Person editedPerson, Index index) {
+
         this.editedPerson = editedPerson;
+        this.index = index;
     }
 
     public Person getPerson() {
         return this.editedPerson;
+    }
+
+    public Index getIndex() {
+        return this.index;
     }
 
     @Override
@@ -820,11 +831,11 @@ public class ShowNewTeamNameEvent extends BaseEvent {
 
 }
 ```
-###### /java/seedu/address/commons/events/ui/UndoClearTeamsEvent.java
+###### /java/seedu/address/commons/events/ui/UndoTeamsEvent.java
 ``` java
-public class UndoClearTeamsEvent extends BaseEvent {
+public class UndoTeamsEvent extends BaseEvent {
 
-    public UndoClearTeamsEvent() {
+    public UndoTeamsEvent() {
     }
 
     @Override
@@ -981,6 +992,11 @@ public class SetCommand extends Command {
 }
 
 ```
+###### /java/seedu/address/logic/commands/RedoCommand.java
+``` java
+        EventsCenter.getInstance().post(new UndoTeamsEvent());
+        EventsCenter.getInstance().post(new PersonDetailsChangedNoParamEvent());
+```
 ###### /java/seedu/address/logic/commands/ChangeThemeCommand.java
 ``` java
 public class ChangeThemeCommand extends Command {
@@ -1032,11 +1048,11 @@ public class ChangeThemeCommand extends Command {
 ```
 ###### /java/seedu/address/logic/commands/EditCommand.java
 ``` java
-        EventsCenter.getInstance().post(new PersonDetailsChangedEvent(editedPerson));
+        EventsCenter.getInstance().post(new PersonDetailsChangedEvent(editedPerson, index));
 ```
 ###### /java/seedu/address/logic/commands/UndoCommand.java
 ``` java
-        EventsCenter.getInstance().post(new UndoClearTeamsEvent());
+        EventsCenter.getInstance().post(new UndoTeamsEvent());
         EventsCenter.getInstance().post(new PersonDetailsChangedNoParamEvent());
 ```
 ###### /java/seedu/address/storage/XmlAdaptedTeam.java
@@ -1220,6 +1236,7 @@ public class XmlAdaptedTeam {
             }
         }
     }
+
 ```
 ###### /java/seedu/address/model/ModelManager.java
 ``` java
@@ -1240,6 +1257,7 @@ public class XmlAdaptedTeam {
         indicateAddressBookChanged();
         return isTagValid;
     }
+
 ```
 ###### /java/seedu/address/model/tag/Tag.java
 ``` java
@@ -1253,7 +1271,8 @@ public class XmlAdaptedTeam {
     public void changeTagColour(String colour) {
         this.tagColour = colour;
     }
-    
+
+
     /**
      * Returns true if a given string is a valid tag colour.
      */

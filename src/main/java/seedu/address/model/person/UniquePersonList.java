@@ -135,7 +135,7 @@ public class UniquePersonList implements Iterable<Person> {
         Comparator<Person> ratingComparator = new Comparator<Person>() {
             @Override
             public int compare(Person p1, Person p2) {
-                return p1.getRating().value.compareTo(p2.getRating().value);
+                return p1.getRating().toString().compareTo(p2.getRating().toString());
             }
         };
 
@@ -149,14 +149,14 @@ public class UniquePersonList implements Iterable<Person> {
         Comparator<Person> emailComparator = new Comparator<Person>() {
             @Override
             public int compare(Person p1, Person p2) {
-                return p1.getEmail().value.compareTo(p2.getEmail().value);
+                return p1.getEmail().toString().compareTo(p2.getEmail().toString());
             }
         };
 
         Comparator<Person> addressComparator = new Comparator<Person>() {
             @Override
             public int compare(Person p1, Person p2) {
-                return p1.getAddress().value.compareTo(p2.getAddress().value);
+                return p1.getAddress().toString().compareTo(p2.getAddress().toString());
             }
         };
 

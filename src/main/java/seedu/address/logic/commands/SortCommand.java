@@ -21,6 +21,7 @@ public class SortCommand extends UndoableCommand {
             + "by fields in either ascending or descending order.\n"
             + "Parameters: FIELD ORDER\n"
             + "Accepted fields for sort: name, email, address, rating, jersey, pos\n"
+            + "Accepted orders: asc & desc\n"
             + "Example: " + COMMAND_WORD
             + " name " + BY_ASCENDING;
 

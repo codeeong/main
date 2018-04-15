@@ -267,11 +267,13 @@ This section describes some noteworthy details on how certain features are imple
 === Pre-existing
 
 ==== Configuration
+=== Configuration
 
 Certain properties of the application can be controlled (e.g App name, logging level) through the configuration file (default: `config.json`).
 
 // tag::logging[]
 ==== Logging
+=== Logging
 
 We are using `java.util.logging` package for logging. The `LogsCenter` class is used to manage the logging levels and logging destinations.
 
@@ -289,6 +291,12 @@ We are using `java.util.logging` package for logging. The `LogsCenter` class is 
 [[Implementation-Configuration]]
 // end::logging[]
 
+== Implementation
+
+This section describes some noteworthy details on how certain features are implemented.
+
+=== Pre-existing
+
 // tag::undoredo[]
 ==== Undo/Redo feature
 ===== Current Implementation
@@ -298,6 +306,7 @@ The undo/redo mechanism is facilitated by an `UndoRedoStack`, which resides insi
 `UndoRedoStack` only deals with `UndoableCommands`. Commands that cannot be undone will inherit from `Command` instead. The following diagram shows the inheritance diagram for commands:
 
 .Structure of Commands in the Logic Component (see Figure 7)
+.Logic Class Diagram
 image::LogicCommandClassDiagram.png[width="800"]
 
 As you can see from the diagram, `UndoableCommand` adds an extra layer between the abstract `Command` class and concrete commands that can be undone, such as the `DeleteCommand`. Note that extra tasks need to be done when executing a command in an _undoable_ way, such as saving the state of the address book before execution. `UndoableCommand` contains the high-level algorithm for those extra tasks while the child classes implements the details of how to execute the specific command. Note that this technique of putting the high-level algorithm in the parent class and lower-level steps of the algorithm in child classes is also known as the https://www.tutorialspoint.com/design_pattern/template_pattern.htm[template pattern].
@@ -337,10 +346,12 @@ Suppose that the user has just launched the application. The `UndoRedoStack` wil
 
 The user executes a new `UndoableCommand`, `delete 5`, to delete the 5th person in the address book. The current state of the address book is saved before the `delete 5` command executes. The `delete 5` command will then be pushed onto the `undoStack` (the current state is saved together with the command).
 
+.Undo/Redo Stack Diagram (Part 1)
 image::UndoRedoStartingStackDiagram.png[width="800"]
 
 As the user continues to use the program, more commands are added into the `undoStack`. For example, the user may execute `add n/David ...` to add a new person.
 
+.Undo/Redo New Command Stack Diagram (Part 1)
 image::UndoRedoNewCommand1StackDiagram.png[width="800"]
 
 [NOTE]
@@ -350,6 +361,7 @@ The user now decides that adding the person was a mistake, and decides to undo t
 
 We will pop the most recent command out of the `undoStack` and push it back to the `redoStack`. We will restore the address book to the state before the `add` command executed.
 
+.Undo/Redo Stack Diagram (Part 2)
 image::UndoRedoExecuteUndoStackDiagram.png[width="800"]
 
 [NOTE]
@@ -358,6 +370,7 @@ If the `undoStack` is empty, then there are no other commands left to be undone,
 The following sequence diagram shows how the undo operation works:
 
 .Interactions Inside the Logic Component for the `undo` Command
+.Undo/Redo Sequence Diagram
 image::UndoRedoSequenceDiagram.png[width="800"]
 
 The redo does the exact opposite (pops from `redoStack`, push to `undoStack`, and restores the address book to the state after the command is executed).
@@ -367,14 +380,17 @@ If the `redoStack` is empty, then there are no other commands left to be redone,
 
 The user now decides to execute a new command, `clear`. As before, `clear` will be pushed into the `undoStack`. This time the `redoStack` is no longer empty. It will be purged as it no longer make sense to redo the `add n/David` command (this is the behavior that most modern desktop applications follow).
 
+.Undo/Redo New Command Stack Diagram (Part 2)
 image::UndoRedoNewCommand2StackDiagram.png[width="800"]
 
 Commands that are not undoable are not added into the `undoStack`. For example, `list`, which inherits from `Command` rather than `UndoableCommand`, will not be added after execution:
 
+.Undo/Redo New Command Stack Diagram (Part 3)
 image::UndoRedoNewCommand3StackDiagram.png[width="800"]
 
 The following activity diagram summarize what happens inside the `UndoRedoStack` when a user executes a new command:
 
+.Undo/Redo Activity Diagram
 image::UndoRedoActivityDiagram.png[width="650"]
 
 ===== Design Considerations
@@ -439,6 +455,8 @@ The sequence diagram below illustrates the operation of the `remark` command:
 //TODO <insert sequence diagram for remark command>
 
 //_Figure : Sequence Diagram of `remark` Command_
+.Remark Activity Diagram
+image::RemarkActivityDiagram.png[width="100%"]
 
 The `remark` field is not required when adding or editing a `Person`, and it will be initialized to an empty string or retrieved to fit the implementation of the other fields.
 
@@ -719,6 +737,52 @@ The code above utilises a custom `Comparator` defined in the code below:
 ----
 
 The following sequence diagram shows the program flow when `sort` is used: <image>
+                    @Override
+                    public int compare(Person p1, Person p2) {
+                        return p1.getName().fullName.compareTo(p2.getName().fullName);
+                    }
+                };
+
+                Comparator<Person> jerseyComparator = new Comparator<Person>() {
+                    @Override
+                    public int compare(Person p1, Person p2) {
+                        return p1.getJerseyNumber().value.compareTo(p2.getJerseyNumber().value);
+                    }
+                };
+
+                Comparator<Person> ratingComparator = new Comparator<Person>() {
+                    @Override
+                    public int compare(Person p1, Person p2) {
+                        return p1.getRating().toString().compareTo(p2.getRating().toString());
+                    }
+                };
+
+                Comparator<Person> posComparator = new Comparator<Person>() {
+                    @Override
+                    public int compare(Person p1, Person p2) {
+                        return p1.getPosition().value.compareTo(p2.getPosition().value);
+                    }
+                };
+
+                Comparator<Person> emailComparator = new Comparator<Person>() {
+                    @Override
+                    public int compare(Person p1, Person p2) {
+                        return p1.getEmail().toString().compareTo(p2.getEmail().toString());
+                    }
+                };
+
+                Comparator<Person> addressComparator = new Comparator<Person>() {
+                    @Override
+                    public int compare(Person p1, Person p2) {
+                        return p1.getAddress().toString().compareTo(p2.getAddress().toString());
+                    }
+                };
+----
+
+The following sequence diagram shows the program flow when `sort` is used:
+
+.Sort Sequence Diagram
+image::sortSeq.png[width="900"]
 
 [NOTE]
 If address book is empty, a `NoPlayerException` will be thrown by `sortBy` method in UniquePlayerList.
@@ -764,9 +828,18 @@ One of the core components to MTM is `Team`, and it is the base to creating more
 We achieved the implementation of `Team` component by introducing a `UniqueTeamList` into the application which consists of a list of `Team` objects. `UniqueTeamList` is similar in context to `UniquePersonList` in which it keeps a unique list of all the `Team` objects. `Team` objects consist of `TeamName` object, which is used to uniquely identify the team. `Team` inherits `UniquePersonList` object which stores the a list of unique `Person` objects, containing information of the player.
 
 The class diagram below shoes the relationship between the related classes.
+The class diagrams below shoes the relationship between the related classes.
+
+.Model Component: Team Class Diagram
+image::TeamModelClassDiagram.png[width="800"]
 
 //TODO-jordan: include class diagram of UniqueTeamList -> Team -> UniquePersonList
 //_Figure <>: Class Diagram of Team Components
+.Storage Component: Team Class Diagram
+image::TeamStorageClassDiagram.png[width="400"]
+
+.UI Component: Team Class Diagram
+image::TeamUiClassDiagram.png[width="400"]
 
 Code snippet from `Team.java` that shows the constructor for `Team`.
 
@@ -930,11 +1003,20 @@ After the creation of a new team, the user will then be able to perform a new se
 The sequence diagram below illustrates the operation of the `create` command:
 //TODO-jordan: create sequence diagram for create
 
+.Logic Component: Create Sequence Diagram
+image::TeamCreateSequenceDiagram1.png[width="100%"]
+
+.Model Component: Create Sequence Diagram
+image::TeamCreateSequenceDiagram2.png[width="70%"]
+
 ====== `view`: Views a `Team`, which shows all players in the team.
 The command uses the `filteredPersons` list, and an overloaded `updateFilteredPersonList` method that sets a predicate that filters the list based on a `TeamName`, in `ModelManager.java` so that it can be displayed via the UI.
 
 The sequence diagram below illustrates the operation of the `view` command:
 //TODO-jordan: view sequence diagram for view
+
+.View Sequence Diagram
+image::TeamViewSequenceDiagram.png[width="100%"]
 
 ====== `rename`: Renames a given `Team`.
 The user can rename a specified team to a new team name only if the current team name does not existing in MTM. On a side note, it prevents the user from renaming the team to the same name that it currently have.
@@ -943,6 +1025,12 @@ This command will update the name of the teams that are in `teams` in `AddressBo
 
 The sequence diagram below illustrates the operation of the `rename` command:
 //TODO-jordan: rename sequence diagram for rename
+
+.Logic Component: Rename Sequence Diagram
+image::TeamRenameSequenceDiagram1.png[width="100%"]
+
+.Model Component: Rename Sequence Diagram
+image::TeamRenameSequenceDiagram2.png[width="70%"]
 
 ====== `assign`: Assign a set of `Person` to a specified `Team`.
 The core feature that organizes the player into teams so that the user can easily view the desired team players quickly. The command have 2 functions, firstly it is able to assign an individual or a set of players to a specified team, and secondly, it is able to unassign an individual or a set of players from any team.
@@ -965,11 +1053,20 @@ This command will update and synchronise all affected players in `persons` and i
 The sequence diagram below illustrates the operation of the `assign` command:
 //TODO-jordan: assign sequence diagram for assign
 
+.Assign Sequence Diagram
+image::TeamAssignSequenceDiagram.png[width="100%"]
+
 ====== `remove`: Removes the given `Team`.
 The final step in completing the CRUD design is the removal of team. It will delete the `Team` from `teams` list in `AddressBook.java` and will update all affected players in the team to be unassigned from the team by having their `TeamName` field updated with an unspecifed field.
 
 The sequence diagram below illustrates the operation of the `remove` command:
 //TODO-jordan: remove sequence diagram for remove
+
+.Logic Component: Remove Sequence Diagram
+image::TeamRemoveSequenceDiagram1.png[width="100%"]
+
+.Model Component: Remove Sequence Diagram
+image::TeamRemoveSequenceDiagram2.png[width="70%"]
 
 ===== Design Consideration
 ====== Aspect: Implementation of Team Functions
@@ -1003,6 +1100,11 @@ The `showBest` command is able to show the current team's best 11 players. There
 ===== Current Implementation
 Locking mechanism of MTM can be toggled on and off using the `Key` command. It utilises the Model to access
 user preferences of MTM. Current lock state and password is stored in `UserPrefs` in the Storage component.
+
+This activity diagram shows the logic behind the `Key` command:
+
+.Key Activity Diagram
+image::Keyactdiag.png[width="900"]
 
 Password checking done in `Key` command:
 [source, java]
@@ -1589,6 +1691,9 @@ Exclusive application for management of footballers and football teams that prov
  ** Major - Revamp MTM’s whole GUI for ease of viewing teams and players’ details +
  e.g. remove browser panel, add player details panel, change person card +
  ** Minor - Command to set the colour of tags to colour of choice
+** Major - Revamp MTM’s whole GUI for ease of viewing teams and players’ details.
+*** e.g. remove browser panel, add player details panel, change person card.
+** Minor - Command to set the colour of tags to colour of choice.
 
 * Jordan
  ** Major - Creation of Team and related functions. +
@@ -1599,6 +1704,11 @@ Exclusive application for management of footballers and football teams that prov
  ** Minor
     *** Introduce `remark` command and `remark` field.
     *** Enhanced add functionality to allow optional fields.
+** Major - Implementation of Team Component and Related Functions.
+*** e.g. creation of team, assignment of players, viewing of teams, removal of team, renaming of team.
+** Minor
+*** Introduce `remark` command and `remark` field.
+*** Enhanced add functionality to allow optional fields.
 
 * Syafiq
  ** Major
@@ -1606,12 +1716,20 @@ Exclusive application for management of footballers and football teams that prov
  e.g. Position, Rating (0 - 5 Star),  Remarks +
     *** Update add, edit ,list, sort to include these fields accordingly. +
  ** Minor - Autocomplete command
+** Major - Create a new player class that contains more information about the players.
+*** e.g. Position, Rating (0 - 5 Star),  Remarks
+*** Update add, edit ,list, sort to include these fields accordingly.
+** Minor - Autocomplete command
 
 * Tianwei
  ** Major - privacy
     *** Set private field and passwords
     *** Make accounts
  ** Minor - Sorting players by different fields
+** Major - privacy
+*** Set private field and passwords
+*** Make accounts
+** Minor - Sorting players by different fields
 
 [appendix]
 == User Stories
@@ -1911,3 +2029,121 @@ _{ more test cases ... }_
 .. _{explain how to simulate a missing/corrupted file and the expected behavior}_
 
 _{ more test cases ... }_
+
+=== Remarking a player
+
+. Remarking a player while all players are listed
+
+.. Prerequisites: List all players using the `list` command. Multiple players in the list.
+.. Test case: `remark 1 r/This is my remark to you.` +
+Expected: First player is remarked from the list. Details of the remarked player shown in the status message. Timestamp in the status bar is updated.
+.. Test case: `remark 0` +
+Expected: No person is remarked. Error details shown in the status message. Status bar remains the same.
+.. Other incorrect delete commands to try: `remark`, `remark x` (where x is larger than the list size), `remark -1`, `remark 2 x/` (where x is not the prefix for remark) +
+Expected: Similar to previous.
+.. Test case: `remark 1` +
+Expected: First player has its remark removed. Details of the remarked player shown in the status message. Timestamp in the status bar is updated.
+.. Test case: `remark 1 r/I want to delete this.` -> `remark 1 r/` +
+Expected: Similar to previous.
+
+=== Adding a player without all fields
+
+. Adding a player where player is unique
+
+.. Prerequisites: Newly added player must not exist in MTM.
+.. Test case: `add n/Tumeric Turner e/tt@tuner.com` +
+Expected: Player added into MTM and will be on the list. Details of the newly added player shown in the status message. Fields that are not input during addition are replaced with `<UNSPECIFIED>` Timestamp in the status bar is updated.
+.. Test case: `add n/Guavi Hollae` +
+Expected: Player is not added into MTM. Errors details shown in status message. Name and email are compulsory fields that need to be entered for `add` to work.
+
+=== Team-Related Functions
+
+==== Creating a Team
+
+. Creating a Team with current existing data in MTM
+
+.. Prerequisites: Team currently does not exist in MTM.
+.. Test case: `create NUSTeam` +
+Expected: Team is created and displayed in Team Display Panel. Team name will be shown in the status message. Timestamp in the status bar is updated.
+.. Test case: `create NUSTeam` +
+Expected: Team is not created due to team already existing in MTM. Team Display Panel remains the same. Error details shown in the status message. Status bar remains the same.
+.. Test case: `create &-Team-&` +
+Expected: Team does not allow names with special characters, only alphanumeric, can consist of all numbers and can contain space in name. Team Display Panel remains the same. Error details shown in the status message. Status bar remains the same.
+
+==== Viewing a Team
+
+. Viewing a Team with current existing data in MTM
+
+.. Prerequisites: Team currently exist in MTM.
+... Test case: `view Arsenal` +
+Expected: Team in Team Display Panel will be selected. Player list will be updated with list of players that are in the Team. Team name will be shown in the status message.
+... Test case: `view NonExistingTeam` +
+Expected: Team is not viewed as it does not exist in MTM. Error details shown in the status message.
+... Test case: `view chelsea` +
+Expected: Team is not viewed as it does not exist in MTM, as team names are case sensitive. Error details shown in the status message.
+.. Prerequisites: The command `create NUSTeam` was executed right before executing this test case.
+... Test case: `view NUSTeam` +
+Expected: Team in Team Display Panel will be selected. Player list will be empty as no players are in the team yet. Team name will be shown in the status message.
+
+==== Assigning Players to Team
+
+. Assigning players to a Team after executing `create NUSTeam`
+
+.. Test case: `list` -> `assign NUSTeam i/1 3 5` +
+Expected: Team in Team Display panel will be selected. Player list will be updated with list of players that are in the Team with the newly assigned players. Each individual player assign will be shown in the status message. Timestamp in the status bar is updated.
+.. Test case: `list` -> `assign NUSTeam i/3` +
+Expected: No player is assigned as player already exist in the team. Error details shown in the status message. Status bar remains the same.
+.. Test case: `list` -> `assign NUSTeam i/2 3 4` +
+Expected: Only the player at index 2 is assigned. Assign command will stop once it detects that a player cannot be assigned. Team Display Panel will not be updated. Person Card of index 2 will be updated with assigned team. Timestamp in the status bar is updated.
+.. Test case: `list` -> `assign NUSTeam i/9 6 4` +
+Expected: All players will be assigned by ascending index order. Team in Team Display panel will be selected. Player list will be updated with list of players that are in the Team with the newly assigned players. Each individual player assign will be shown in the status message. Timestamp in the status bar is updated.
+.. Test case: `list` -> `assign NUSTeam i/7 40` +
+Expected: Index exceeding the number of players listed in the Player List Panel will be ignored. Team in Team Display panel will be selected. Player list will be updated with list of players that are in the Team with the newly assigned players. Each individual player assign will be shown in the status message. Timestamp in the status bar is updated.
+.. Test case: `list` -> `assign NUSTeam i/-1` +
+Expected: Invalid index will have error details shown in the status message. Team is not viewed.
+.. Test case: `list` -> `assign NUSTeam` +
+Expected: Error details shown in the status message. Invalid command format as no index is given. Team is not viewed.
+.. Test case: `assign NoTeam` +
+Expected: Error deatils shown in the status message. No such team found in MTM. Team is not viewed, player list not updated.
+.. Test case: `add n/Barry Putter e/bp@hotwot.com tm/NUSTeam` +
+Expected: New person is added into MTM. Team in Team Display Panel will be selected. Player list will be updated with the new added person. Timestamp in the status bar is updated.
+.. Test case: `add n/Himonie Branger e/hb@notwot.com tm/MissingTeam` +
+Expected: Person is not added into MTM. Team does not exist in MTM. Error details shown in the status message.
+
+. Unassigning players from a Team
+
+.. Prerequisites: Players are already existing in the team
+.. Test case: `view NUSTeam` -> `assign i/1 2 3` +
+Expected: Player list will be updated as the specified players to be unassigned will be removed from the team. Each individual player unassign will be shown in the status message. Timestamp in the status bar is updated.
+.. Test case: `list` -> `assign i/10 11` +
+Expected: Player list will be updated with the specified players to be unassigned will have their team name updated to `<UNSPECIFIED>`. Each individual player unassign will be shown in the status message. Timestamp in the status bar is updated.
+.. Test case: `assign i/NUS` +
+Expected: Invalid index will have error details shown in the status message.
+.. Test case: `list` -> `assign i/1` +
+Expected: Error details shown in the status message. Player already has no team and can't be unassigned.
+
+==== Renaming a Team
+
+. Renaming a Team after assigning players above
+
+.. Prerequisites: Ensure that the team to be renamed into does not exist
+.. Test case: `rename NUSTeam tm/SUNTeam` +
+Expected: Team in Team Display Panel will be renamed to the new team name. New team name will be selected in the Team Display Panel. Player list of all the players in the new team name will be displayed. All players in the team will have their team name updated to the new team name. Team rename will be shown in the result status message. Timestamp in the status bar is updated.
+.. Test case: `rename NewTeam tm/MooTeam` +
+Expected: Error details shown in the status message. Team to be rename does not exist in MTM.
+.. Test case: `rename SUNTeam tm/&-Team` +
+Expected: Error details shown in the status message. Team to be rename into is invalid and should only contains alphanumeric characters.
+.. Test case: `rename tm/SmoovTeam` +
+Expected: Error details shown in the status message. Did not specify which team to rename and will indicate invalid command format.
+
+==== Removing a Team
+
+. Removing a Team after renaming the team above
+
+.. Prerequisites: Team currently exist in MTM.
+.. Test case: `view SUNTeam` -> `remove SUNTeam` +
+Expected: Team is removed and Team Display Panel is updated to reflect that the team has been removed. Team name that is being removed will be shown in the status message. All players in the team will have their team name updated in the Player List Panel. Player List Panel will show the full list of players in MTM. Timestamp in the status bar is updated.
+.. Test case: `list` -> `remove Arsenal` +
+Expected: Similar to above, will be displaying full list of players before and after `remove` command.
+.. Test case: `remove SUNTeam` +
+Expected: Error details shown in the status message. Team does not exist in MTM.

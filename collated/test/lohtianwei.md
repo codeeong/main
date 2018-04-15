@@ -1,4 +1,99 @@
 # lohtianwei
+###### /java/seedu/address/logic/parser/TogglePrivacyCommandParserTest.java
+``` java
+import static org.junit.Assert.assertEquals;
+import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_AMY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
+
+import org.junit.Test;
+
+import seedu.address.commons.core.index.Index;
+import seedu.address.logic.commands.TogglePrivacyCommand;
+import seedu.address.logic.commands.TogglePrivacyCommand.EditPersonPrivacy;
+import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.testutil.EditPersonPrivacyBuilder;
+
+public class TogglePrivacyCommandParserTest {
+
+    private static final String MESSAGE_INVALID_FORMAT = String.format
+            (MESSAGE_INVALID_COMMAND_FORMAT, TogglePrivacyCommand.MESSAGE_USAGE);
+
+    private static final String MESSAGE_NO_FIELDS = String.format(TogglePrivacyCommand.MESSAGE_NO_FIELDS);
+
+    private TogglePrivacyCommandParser parser = new TogglePrivacyCommandParser();
+
+    @Test
+    public void parseInvalidIndex() {
+        // zero index
+        assertParseFailure(parser, "0" + NAME_DESC_AMY, MESSAGE_INVALID_FORMAT);
+        //negative index
+        assertParseFailure(parser, "-5" + NAME_DESC_AMY, MESSAGE_INVALID_FORMAT);
+        //invalid index
+        assertParseFailure(parser, "1 random", MESSAGE_INVALID_FORMAT);
+    }
+
+    @Test
+    public void parseMissingField_fail() {
+        // no prefix specified
+        assertParseFailure(parser, "1", MESSAGE_NO_FIELDS);
+        //no index specified
+        assertParseFailure(parser, VALID_NAME_AMY, MESSAGE_INVALID_FORMAT);
+        //nothing specified after command word
+        assertParseFailure(parser, "", MESSAGE_INVALID_FORMAT);
+    }
+
+    @Test
+    public void parseInvalidPrefix_fail() {
+        assertParseFailure(parser, "1" + " " + PREFIX_NAME,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, TogglePrivacyCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parseOneField_success() throws ParseException {
+        Index target = INDEX_FIRST_PERSON;
+        String input = target.getOneBased() + " " + PREFIX_PHONE;
+
+        EditPersonPrivacy epp = new EditPersonPrivacyBuilder().setPhonePrivate("false").build();
+        TogglePrivacyCommand expected = new TogglePrivacyCommand(target, epp);
+
+        TogglePrivacyCommand actual = parser.parse(input);
+
+        compareTpCommand(expected, actual);
+    }
+
+    @Test
+    public void parseValidFollowedbyInvalid_success() throws ParseException {
+        Index target = INDEX_FIRST_PERSON;
+        String input = target.getOneBased() + " " + PREFIX_PHONE + " " + PREFIX_NAME;
+
+        EditPersonPrivacy epp = new EditPersonPrivacyBuilder().setPhonePrivate("false").build();
+        TogglePrivacyCommand expected = new TogglePrivacyCommand(target, epp);
+
+        TogglePrivacyCommand actual = parser.parse(input);
+
+        compareTpCommand(expected, actual);
+    }
+
+    /**
+     * Checks if two TP commands are equal
+     * @param expected
+     * @param actual
+     */
+    private void compareTpCommand(TogglePrivacyCommand expected, TogglePrivacyCommand actual) {
+        assertEquals(expected.getIndex(), actual.getIndex());
+        assertEquals(expected.getEpp().getPrivateRemark(), actual.getEpp().getPrivateRemark());
+        assertEquals(expected.getEpp().getPrivateAddress(), actual.getEpp().getPrivateAddress());
+        assertEquals(expected.getEpp().getPrivateRating(), actual.getEpp().getPrivateRating());
+        assertEquals(expected.getEpp().getPrivatePhone(), actual.getEpp().getPrivatePhone());
+        assertEquals(expected.getEpp().getPrivateEmail(), actual.getEpp().getPrivateEmail());
+    }
+}
+```
 ###### /java/seedu/address/logic/parser/SortCommandParserTest.java
 ``` java
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
@@ -189,6 +284,117 @@ public class SortCommandTest {
     }
 }
 ```
+###### /java/seedu/address/logic/commands/KeyCommandTest.java
+``` java
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import seedu.address.model.Model;
+import seedu.address.model.ModelManager;
+
+public class KeyCommandTest {
+
+    private Model model;
+
+    @Before
+    public void start() {
+        model = new ModelManager();
+    }
+
+    @Test
+    public void checkKey() throws Exception {
+        //checks that default lock state is false
+        assertFalse(model.getLockState());
+
+        //checks that key can lock MTM
+        model.lockAddressBookModel();
+        assertTrue(model.getLockState());
+
+        //checks that key can unlock MTM
+        model.unlockAddressBookModel();
+        assertFalse(model.getLockState());
+
+        //checks that toggling works
+        model.lockAddressBookModel();
+        model.unlockAddressBookModel();
+        assertFalse(model.getLockState());
+
+        model.unlockAddressBookModel();
+        model.lockAddressBookModel();
+        assertTrue(model.getLockState());
+    }
+}
+```
+###### /java/seedu/address/logic/commands/TogglePrivacyCommandTest.java
+``` java
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static seedu.address.logic.commands.TogglePrivacyCommand.EditPersonPrivacy;
+import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
+
+import org.junit.Test;
+
+import seedu.address.commons.core.index.Index;
+import seedu.address.logic.CommandHistory;
+import seedu.address.logic.UndoRedoStack;
+import seedu.address.model.AddressBook;
+import seedu.address.model.Model;
+import seedu.address.model.ModelManager;
+import seedu.address.model.UserPrefs;
+import seedu.address.model.person.Person;
+import seedu.address.testutil.EditPersonPrivacyBuilder;
+import seedu.address.testutil.PersonBuilder;
+
+public class TogglePrivacyCommandTest {
+    private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+
+    @Test
+    public void editPersonPrivacyTest() {
+        EditPersonPrivacy epp = new EditPersonPrivacy();
+
+        assertFalse(epp.anyNonNullField());
+
+        EditPersonPrivacy eppBuilder = new EditPersonPrivacyBuilder().setAddressPrivate("false")
+                .setEmailPrivate("false").setPhonePrivate("true").setRatingPrivate("false")
+                .setRemarkPrivate("true").build();
+
+        epp.setPrivateAddress(false);
+        epp.setPrivateEmail(false);
+        epp.setPrivatePhone(true);
+        epp.setPrivateRating(false);
+        epp.setPrivateRemark(true);
+
+        assertEquals(eppBuilder.getPrivateAddress(), epp.getPrivateAddress());
+        assertEquals(eppBuilder.getPrivateEmail(), epp.getPrivateEmail());
+        assertEquals(eppBuilder.getPrivatePhone(), epp.getPrivatePhone());
+        assertEquals(eppBuilder.getPrivateRating(), epp.getPrivateRating());
+        assertEquals(eppBuilder.getPrivateRemark(), epp.getPrivateRemark());
+    }
+
+    @Test
+    public void oneFieldToggledSuccess() throws Exception {
+        Index indexLast = Index.fromOneBased(model.getFilteredPersonList().size());
+        Person lastPerson = model.getFilteredPersonList().get(indexLast.getZeroBased());
+
+        Person listedPerson = new PersonBuilder().withName(lastPerson.getName().toString())
+                .withEmail(lastPerson.getEmail().toString()).withRating(lastPerson.getRating().toString())
+                .withPhone(lastPerson.getPhone().toString()).build();
+
+        listedPerson.getPhone().setPrivate(true);
+
+        EditPersonPrivacy epp = new EditPersonPrivacyBuilder(listedPerson).setPhonePrivate("true").build();
+        TogglePrivacyCommand togglePrivacyCommand = new TogglePrivacyCommand(indexLast, epp);
+        togglePrivacyCommand.setData(model, new CommandHistory(), new UndoRedoStack());
+
+        String expected = String.format(TogglePrivacyCommand.MESSAGE_SUCCESS, listedPerson);
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.updatePerson(lastPerson, listedPerson);
+    }
+}
+```
 ###### /java/seedu/address/testutil/EditPersonPrivacyBuilder.java
 ``` java
 import seedu.address.logic.commands.TogglePrivacyCommand.EditPersonPrivacy;
@@ -218,6 +424,61 @@ public class EditPersonPrivacyBuilder {
         epp.setPrivatePhone(p.getPhone().isPrivate());
         epp.setPrivateRemark(p.getRemark().isPrivate());
         epp.setPrivateRating(p.getRating().isPrivate());
+    }
+
+    public EditPersonPrivacyBuilder setPhonePrivate(String phone) {
+        if (phone.equals("Optional[true]") || phone.equals("true")) {
+            epp.setPrivatePhone(true);
+        } else if (phone.equals("Optional[false]") || phone.equals("false")) {
+            epp.setPrivatePhone(false);
+        } else {
+            throw new IllegalArgumentException("Privacy of phone should be true or false");
+        }
+        return this;
+    }
+
+    public EditPersonPrivacyBuilder setEmailPrivate(String email) {
+        if (email.equals("Optional[true]") || email.equals("true")) {
+            epp.setPrivateEmail(true);
+        } else if (email.equals("Optional[false]") || email.equals("false")) {
+            epp.setPrivateEmail(false);
+        } else {
+            throw new IllegalArgumentException("Privacy of email should be true or false");
+        }
+        return this;
+    }
+
+    public EditPersonPrivacyBuilder setAddressPrivate(String address) {
+        if (address.equals("Optional[true]") || address.equals("true")) {
+            epp.setPrivateAddress(true);
+        } else if (address.equals("Optional[false]") || address.equals("false")) {
+            epp.setPrivateAddress(false);
+        } else {
+            throw new IllegalArgumentException("Privacy of address should be true or false");
+        }
+        return this;
+    }
+
+    public EditPersonPrivacyBuilder setRatingPrivate(String rating) {
+        if (rating.equals("Optional[true]") || rating.equals("true")) {
+            epp.setPrivateRating(true);
+        } else if (rating.equals("Optional[false]") || rating.equals("false")) {
+            epp.setPrivateRating(false);
+        } else {
+            throw new IllegalArgumentException("Privacy of rating should be true or false");
+        }
+        return this;
+    }
+
+    public EditPersonPrivacyBuilder setRemarkPrivate(String remark) {
+        if (remark.equals("Optional[true]") || remark.equals("true")) {
+            epp.setPrivateRemark(true);
+        } else if (remark.equals("Optional[false]") || remark.equals("false")) {
+            epp.setPrivateRemark(false);
+        } else {
+            throw new IllegalArgumentException("Privacy of remark should be true or false");
+        }
+        return this;
     }
 
     public EditPersonPrivacy build() {

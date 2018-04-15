@@ -8,7 +8,7 @@
 
 == Overview
 
-My Team Manager (MTM) is a dekstop command-line interface (CLI) based address book application for football team managers.
+My Team Manager (MTM) is a desktop command-line interface (CLI) based address book application for football team managers.
 It is a one-stop solution to help you manage your player’s contact details and team information in an efficient and convenient manner.
 MTM is further enhanced with usability implementations that make MTM efficient and easy to use with JavaFX GUI display.
 
@@ -20,11 +20,9 @@ MTM is further enhanced with usability implementations that make MTM efficient a
 ** *Justification*: This feature is a core component to the product as it gives users the capability to manage and view their teams *easily and in a convenient way*.
 ** *Highlights*: The implementation requires new classes and commands to be created and also affects current existing `add` command. The class is set up so that future enhancements can use the data quickly. The implementation was challenging as it requires that player's information are in-sync with the information in the class.
 
-* *Minor enhancement*:
-** added a remark command that allows the user to leave a remark to a specific player. [https://github.com/CS2103JAN2018-F14-B1/main/pull/58[PR#58]]
-** enhanced functionality of add command that allows certain field to be optional. [https://github.com/CS2103JAN2018-F14-B1/main/pull/54[PR#54]]
+* *Minor enhancement*: added a remark command that allows the user to leave a remark to a specific player. [https://github.com/CS2103JAN2018-F14-B1/main/pull/58[PR#58]]
 
-* *Code contributed*: [https://github.com/CS2103JAN2018-F14-B1/main/collated/functional/jordancjq.md[Functional code]] [https://github.com/CS2103JAN2018-F14-B1/main/collated/test/jordancjq.md[Test code]]
+* *Code contributed*: [https://github.com/CS2103JAN2018-F14-B1/main/blob/master/collated/functional/jordancjq.md[Functional code]] [https://github.com/CS2103JAN2018-F14-B1/main/blob/master/collated/test/jordancjq.md[Test code]]
 
 * *Other contributions*:
 
@@ -32,12 +30,16 @@ MTM is further enhanced with usability implementations that make MTM efficient a
 *** Published releases `v1.3` ~ `v1.4` (2 release) on GitHub.
 *** Documented issues of project using GitHub's Issue Tracker and address the issues accordingly.
 ** Enhancements to existing features:
-*** Changes are mentioned in <<Minor Enhancement, Minor enhancement>>.
+*** Enhanced functionality of add command that allows certain field to be optional. [https://github.com/CS2103JAN2018-F14-B1/main/pull/54[PR#54]]
 *** Made changes based on suggestions from feedback. [https://github.com/CS2103JAN2018-F14-B1/main/pull/167[PR#167]]
 ** Documentation:
-*** Re-arrange features in UserGuide into appropriate categories (Basic, Player, Team, Others). [https://github.com/CS2103JAN2018-F14-B1/main/pull/110[PR#110]]
-*** Create command summary table for ease of viewing and quick access
-*** Update AboutUs segment with team member's pictures and contributions. [https://github.com/CS2103JAN2018-F14-B1/main/pull/68[PR#68]][https://github.com/CS2103JAN2018-F14-B1/main/pull/49[#PR49]]
+*** Update AboutUs segment with team member's pictures and contributions. [https://github.com/CS2103JAN2018-F14-B1/main/pull/68[PR#68]][https://github.com/CS2103JAN2018-F14-B1/main/pull/49[PR#49]]
+*** Re-arrange features in UserGuide into appropriate categories (Fundamentals, Player, Team, User Experience, Coming Soon). [https://github.com/CS2103JAN2018-F14-B1/main/pull/110[PR#110]]
+*** Update User Guide on all Team-Related Commands, `setmatch`, `nextmatch`, `remark`, `help`, `undo`, `redo`, and `select`.
+*** Wrote the preface for the Features segment, "Getting started with Commands", "The Use Of Alias", and "Lookout for Tips, Notes, and Expected Outcomes".
+*** Create Command Summary Table in User Guide for ease of viewing and quick access to commands.
+*** Introduce the "Overview" segment into the development guide.
+*** Wrote the sections on "Remark a Player", "Team-Related Enhancements", and "Optional Field Add Command".
 ** Community:
 *** PRs reviewed (with non-trivial review comments) [https://github.com/CS2103JAN2018-F14-B1/main/pull/57[PR#57]][https://github.com/CS2103JAN2018-F14-B1/main/pull/94[PR#94]][https://github.com/CS2103JAN2018-F14-B1/main/pull/171[PR#171]]
 *** Reported bugs and suggestions for other teams in the class (https://github.com/CS2103JAN2018-F11-B4/main/issues/99[1],
@@ -54,15 +56,15 @@ https://github.com/CS2103JAN2018-F11-B4/main/issues/113[6])
 |_Given below are sections I contributed to the User Guide. They showcase my ability to write documentation targeting end-users._
 |===
 
-include::../UserGuide.adoc[tag=team]
+include::../UserGuide.adoc[tag=create]
+
+include::../UserGuide.adoc[tag=assign]
 
 == Contributions to the Developer Guide
 
 |===
 |_Given below are sections I contributed to the Developer Guide. They showcase my ability to write technical documentation and the technical depth of my contributions to the project._
 |===
-
-include::../DeveloperGuide.adoc[tag=overview]
 
 include::../DeveloperGuide.adoc[tag=team]
 

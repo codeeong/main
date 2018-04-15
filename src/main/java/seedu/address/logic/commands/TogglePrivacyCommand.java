@@ -17,6 +17,7 @@ import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.events.ui.PersonDetailsChangedEvent;
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Avatar;
@@ -55,6 +56,7 @@ public class TogglePrivacyCommand extends UndoableCommand {
 
     public static final String MESSAGE_SUCCESS = "Changed the Privacy of the Person: %1$s";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_NO_FIELDS = "No prefixes were specified!";
 
     public static final String MESSAGE_PARAMETERS = "INDEX "
             + "[" + PREFIX_PHONE + "PHONE]"
@@ -358,6 +360,15 @@ public class TogglePrivacyCommand extends UndoableCommand {
 
         public Boolean getPrivateRating() {
             return privateRating;
+        }
+
+        /**
+         *
+         * @return true if at least one field is not null
+         */
+        public boolean anyNonNullField() {
+            return CollectionUtil.isAnyNonNull(this.privateAddress, this.privateEmail, this.privatePhone,
+                    this.privateRating, this.privateRemark);
         }
 
         @Override

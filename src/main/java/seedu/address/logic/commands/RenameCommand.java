@@ -68,20 +68,17 @@ public class RenameCommand extends UndoableCommand {
 
     @Override
     protected void preprocessUndoableCommand() throws CommandException {
-        if (!model.getAddressBook().getTeamList().stream().anyMatch(t -> t.getTeamName().equals(targetTeam))) {
+        List<Team> teams = model.getAddressBook().getTeamList();
+
+        if (!teams.stream().anyMatch(t -> t.getTeamName().equals(targetTeam))) {
             throw new CommandException(Messages.MESSAGE_TEAM_NOT_FOUND);
         }
 
-        List<Team> teams = model.getAddressBook().getTeamList();
+        if (teams.stream().anyMatch(t -> t.getTeamName().equals(updatedTeamName))) {
+            throw new CommandException(MESSAGE_NO_CHANGE);
+        }
+
         teamToRename = teams.stream().filter(t -> t.getTeamName().equals(targetTeam)).findFirst().get();
-
-        if (teamToRename.getTeamName().equals(updatedTeamName)) {
-            throw new CommandException(MESSAGE_NO_CHANGE);
-        }
-
-        if (model.getAddressBook().getTeamList().stream().anyMatch(t -> t.getTeamName().equals(updatedTeamName))) {
-            throw new CommandException(MESSAGE_NO_CHANGE);
-        }
     }
 
     @Override

@@ -18,10 +18,12 @@ import java.io.IOException;
 import seedu.address.commons.core.EventsCenter;
 import seedu.address.commons.core.Messages;
 import seedu.address.commons.events.ui.DeselectTeamEvent;
+import seedu.address.commons.events.ui.HighlightSelectedTeamEvent;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
 import seedu.address.model.team.TeamName;
+import seedu.address.model.team.exceptions.TeamNotFoundException;
 
 //@@author lithiumlkid
 /**
@@ -88,13 +90,18 @@ public class AddCommand extends UndoableCommand {
             model.addPerson(toAdd);
             if (!toAdd.getTeamName().toString().equals(UNSPECIFIED_FIELD)) {
                 model.assignPersonToTeam(toAdd, toAdd.getTeamName());
+                model.updateFilteredPersonList(toAdd.getTeamName());
+                EventsCenter.getInstance().post(new HighlightSelectedTeamEvent(toAdd.getTeamName().toString()));
+            } else {
+                EventsCenter.getInstance().post(new DeselectTeamEvent());
             }
-            EventsCenter.getInstance().post(new DeselectTeamEvent());
             return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));
         } catch (DuplicatePersonException e) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         } catch (IOException e) {
             throw new CommandException(MESSAGE_FILE_NOT_FOUND);
+        } catch (TeamNotFoundException e) {
+            throw new CommandException(Messages.MESSAGE_TEAM_NOT_FOUND);
         }
     }
 

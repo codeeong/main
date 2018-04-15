@@ -262,10 +262,12 @@ public class AddressBook implements ReadOnlyAddressBook {
     public void assignPersonToTeam(Person person, TeamName teamName) throws DuplicatePersonException {
         teams.assignPersonToTeam(person, teams.getTeam(teamName));
 
-        try {
-            removePersonFromTeam(person, person.getTeamName());
-        } catch (PersonNotFoundException pnfe) {
-            throw new AssertionError("Impossible: Team should contain of this person");
+        if (!person.getTeamName().toString().equals(UNSPECIFIED_FIELD)) {
+            try {
+                removePersonFromTeam(person, person.getTeamName());
+            } catch (PersonNotFoundException pnfe) {
+                throw new AssertionError("Impossible: Team should contain of this person");
+            }
         }
 
         Person newPersonWithTeam =
@@ -273,12 +275,14 @@ public class AddressBook implements ReadOnlyAddressBook {
                         person.getRemark(), teamName, person.getTags(), person.getRating(), person.getPosition(),
                         person.getJerseyNumber(), person.getAvatar());
 
-        try {
-            updatePerson(person, newPersonWithTeam);
-        } catch (DuplicatePersonException dpe) {
-            throw new AssertionError("AddressBook should not have duplicate person after assigning team");
-        } catch (PersonNotFoundException pnfe) {
-            throw new AssertionError("Impossible: AddressBook should contain this person");
+        if (!person.getTeamName().equals(newPersonWithTeam.getTeamName())) {
+            try {
+                updatePerson(person, newPersonWithTeam);
+            } catch (DuplicatePersonException dpe) {
+                throw new AssertionError("AddressBook should not have duplicate person after assigning team");
+            } catch (PersonNotFoundException pnfe) {
+                throw new AssertionError("Impossible: AddressBook should contain this person");
+            }
         }
     }
 
@@ -323,12 +327,10 @@ public class AddressBook implements ReadOnlyAddressBook {
      * Removes a {@code person} from a {@code team}.
      */
     private void removePersonFromTeam(Person person, TeamName teamName) throws PersonNotFoundException {
-        if (!person.getTeamName().toString().equals(UNSPECIFIED_FIELD)) {
-            try {
-                teams.removePersonFromTeam(person, teams.getTeam(teamName));
-            } catch (PersonNotFoundException pnfe) {
-                throw new PersonNotFoundException();
-            }
+        try {
+            teams.removePersonFromTeam(person, teams.getTeam(teamName));
+        } catch (PersonNotFoundException pnfe) {
+            throw new PersonNotFoundException();
         }
     }
 

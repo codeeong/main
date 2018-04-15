@@ -58,10 +58,6 @@ include::../UserGuide.adoc[tag=sort]
 
 include::../UserGuide.adoc[tag=key]
 
-include::../UserGuide.adoc[tag=showBest2.0]
-
-include::../UserGuide.adoc[tag=changePass2.0]
-
 
 
 == Contributions to the Developer Guide
@@ -75,8 +71,3 @@ include::../DeveloperGuide.adoc[tag=sort]
 include::../DeveloperGuide.adoc[tag=privatefield]
 
 include::../DeveloperGuide.adoc[tag=key]
-
-include::../DeveloperGuide.adoc[tag=showbestxi]
-
-include::../DeveloperGuide.adoc[tag=changepass]
-

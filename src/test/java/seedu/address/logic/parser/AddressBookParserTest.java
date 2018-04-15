@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.commons.core.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TEAM_ARSENAL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
@@ -34,6 +35,7 @@ import seedu.address.logic.commands.RedoCommand;
 import seedu.address.logic.commands.RemarkCommand;
 import seedu.address.logic.commands.SelectCommand;
 import seedu.address.logic.commands.SortCommand;
+import seedu.address.logic.commands.TogglePrivacyCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
@@ -288,6 +290,20 @@ public class AddressBookParserTest {
     public void parseCommand_keyAlias() throws Exception {
         assertTrue(parser.parseCommand(KeyCommand.COMMAND_WORD
                 + " ilikesports", DEFAULT_LOCK_STATE) instanceof KeyCommand);
+    }
+
+    @Test
+    public void parseCommand_togglePrivacy() throws Exception {
+        assertTrue(parser.parseCommand(TogglePrivacyCommand.COMMAND_WORD + " "
+                + INDEX_FIRST_PERSON.getOneBased() + " "
+                + PREFIX_PHONE, DEFAULT_LOCK_STATE) instanceof TogglePrivacyCommand);
+    }
+
+    @Test
+    public void parseCommand_togglePrivacyAlias() throws Exception {
+        assertTrue(parser.parseCommand(TogglePrivacyCommand.COMMAND_ALIAS + " "
+                + INDEX_FIRST_PERSON.getOneBased() + " "
+                + PREFIX_PHONE, DEFAULT_LOCK_STATE) instanceof TogglePrivacyCommand);
     }
 
     /** @@Codee */

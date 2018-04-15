@@ -11,7 +11,7 @@ We are a team based in the http://www.comp.nus.edu.sg[School of Computing, Natio
 
 '''
 
-=== Codee Ong
+=== Codee Ong Wen Ci
 image::codeeo.jpg[width="150", align="left"]
 {empty}[https://github.com/codeeong[github]] [<<codeeong#, portfolio>>]
 
@@ -28,7 +28,7 @@ Feature Contribution:
 
 '''
 
-=== Jordan Chong
+=== Jordan Chong Jia Qi
 image::jordanc.jpg[width="150", align="left"]
 {empty}[http://github.com/jordancjq[github]] [<<jordanchong#, portfolio>>]
 
@@ -45,7 +45,7 @@ Feature Contribution:
 
 '''
 
-=== Ahmad Syafiq
+=== Ahmad Syafiq B Ruhazat
 image::syafiq.jpg[width="150", align="left"]
 {empty}[http://github.com/lithiumlkid[github]] [<<ahmadsyafiq#, portfolio>>]
 
@@ -57,7 +57,7 @@ Feature Contribution:
 ** `Player` Components: Morph `Person` class to contain more information about the players.
 *** Addtional Fields: `POSITION`, `RATING`, `JERSEY_NUMBER`, `AVATAR`
 * Minor Enhancement:
-** Autocomplete: Enhance ease of usage through using kbd:[tab] keyboard shortcut.
+** Autocomplete: Enhance ease of usage through using `TAB` keyboard shortcut.
 
 '''
 

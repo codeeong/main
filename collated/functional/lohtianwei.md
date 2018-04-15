@@ -142,6 +142,11 @@ public class TogglePrivacyCommandParser implements Parser<TogglePrivacyCommand> 
         if (argMultimap.getValue(PREFIX_RATING).isPresent()) {
             epp.setPrivateRating(false);
         }
+
+        if (!epp.anyNonNullField()) {
+            throw new ParseException(TogglePrivacyCommand.MESSAGE_NO_FIELDS);
+        }
+
         return new TogglePrivacyCommand(index, epp);
     }
 }
@@ -250,6 +255,7 @@ public class SortCommand extends UndoableCommand {
             + "by fields in either ascending or descending order.\n"
             + "Parameters: FIELD ORDER\n"
             + "Accepted fields for sort: name, email, address, rating, jersey, pos\n"
+            + "Accepted orders: asc & desc\n"
             + "Example: " + COMMAND_WORD
             + " name " + BY_ASCENDING;
 
@@ -307,6 +313,7 @@ import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.events.ui.PersonDetailsChangedEvent;
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.commons.util.CollectionUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Avatar;
@@ -345,6 +352,14 @@ public class TogglePrivacyCommand extends UndoableCommand {
 
     public static final String MESSAGE_SUCCESS = "Changed the Privacy of the Person: %1$s";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_NO_FIELDS = "No prefixes were specified!";
+
+    public static final String MESSAGE_PARAMETERS = "INDEX "
+            + "[" + PREFIX_PHONE + "PHONE]"
+            + " [" + PREFIX_EMAIL + "EMAIL]"
+            + " [" + PREFIX_REMARK + "REMARK]"
+            + " [" + PREFIX_RATING + "RATING]"
+            + " [" + PREFIX_ADDRESS + "ADDRESS]";
 
     private final Index index;
     private final EditPersonPrivacy epp;
@@ -386,7 +401,7 @@ public class TogglePrivacyCommand extends UndoableCommand {
             throw new AssertionError("The target person cannot be missing");
         }
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        EventsCenter.getInstance().post(new PersonDetailsChangedEvent(editedPerson));
+        EventsCenter.getInstance().post(new PersonDetailsChangedEvent(editedPerson, index));
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, editedPerson));
     }
@@ -643,6 +658,15 @@ public class TogglePrivacyCommand extends UndoableCommand {
             return privateRating;
         }
 
+        /**
+         *
+         * @return true if at least one field is not null
+         */
+        public boolean anyNonNullField() {
+            return CollectionUtil.isAnyNonNull(this.privateAddress, this.privateEmail, this.privatePhone,
+                    this.privateRating, this.privateRemark);
+        }
+
         @Override
         public boolean equals(Object other) {
             // short circuit if same object
@@ -695,6 +719,8 @@ public class KeyCommand extends Command {
     public static final String MESSAGE_SUCCESS = "MTM lock toggled!";
     public static final String MESSAGE_WRONG_PASS = "Password entered is incorrect. Please try again.";
 
+    public static final String MESSAGE_PARAMETERS = "[PASSWORD]";
+
     private String password;
 
     private final Logger logger = LogsCenter.getLogger(KeyCommand.class);
@@ -731,7 +757,8 @@ public class KeyCommand extends Command {
             }
 
             logger.info("Lock state is now: " + Boolean.toString(model.getLockState()));
-            return new CommandResult(MESSAGE_SUCCESS);
+            return new CommandResult(MESSAGE_SUCCESS + "\nLock state is now: "
+                    + Boolean.toString(model.getLockState()));
         } else {
             throw new CommandException(MESSAGE_WRONG_PASS);
         }
@@ -768,7 +795,7 @@ public class KeyCommand extends Command {
         Comparator<Person> ratingComparator = new Comparator<Person>() {
             @Override
             public int compare(Person p1, Person p2) {
-                return p1.getRating().value.compareTo(p2.getRating().value);
+                return p1.getRating().toString().compareTo(p2.getRating().toString());
             }
         };
 
@@ -782,14 +809,14 @@ public class KeyCommand extends Command {
         Comparator<Person> emailComparator = new Comparator<Person>() {
             @Override
             public int compare(Person p1, Person p2) {
-                return p1.getEmail().value.compareTo(p2.getEmail().value);
+                return p1.getEmail().toString().compareTo(p2.getEmail().toString());
             }
         };
 
         Comparator<Person> addressComparator = new Comparator<Person>() {
             @Override
             public int compare(Person p1, Person p2) {
-                return p1.getAddress().value.compareTo(p2.getAddress().value);
+                return p1.getAddress().toString().compareTo(p2.getAddress().toString());
             }
         };
 

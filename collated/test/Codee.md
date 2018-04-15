@@ -114,7 +114,6 @@ public class PlayerDetailsTest extends GuiUnitTest {
         assertEquals(expectedPerson.getRemark().toString(), actualPlayerPanel.getRemarks());
     }
 ```
-
 ###### /java/seedu/address/logic/parser/ChangeThemeCommandParserTest.java
 ``` java
 public class ChangeThemeCommandParserTest {
@@ -375,6 +374,8 @@ public class TeamBuilder {
 ``` java
 public class PlayerDetailsHandle extends NodeHandle<Node> {
 
+    public static final String PLAYER_DETAILS_DISPLAY_ID = "#playerDetails";
+
     private static final String NAME_FIELD_ID = "#name";
     private static final String JERSEY_FIELD_ID = "#jerseyNumber";
     private static final String PHONE_FIELD_ID = "#phone";
@@ -429,7 +430,6 @@ public class PlayerDetailsHandle extends NodeHandle<Node> {
 ```
 ###### /java/guitests/guihandles/TeamDisplayHandle.java
 ``` java
-
 public class TeamDisplayHandle extends NodeHandle<Node> {
     public static final String TEAM_DISPLAY_ID = "#teams";
 
