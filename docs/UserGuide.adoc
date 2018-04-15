@@ -766,7 +766,7 @@ Alias: `stc`
 // tag::changeTheme[]
 [[changeTheme]]
 ==== Changing theme : `changeTheme` `[Since v1.5]`
-If you feel that the light theme is not for you, and you prefer to work on a darker interface,
+If you feel that the light theme is not for you, and you prefer to work on a dark interface,
 you can change the theme from the default LightTheme to DarkTheme with the 'changeTheme' command.
 
 
