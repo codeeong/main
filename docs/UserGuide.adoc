@@ -777,7 +777,7 @@ Alias: `ct`
 ====
 * Current version of `changeTheme` only supports this 2 `THEME`:
 ** `Light` or `Dark`
-* The current version of `changTheme` is *NOT* an UndoableCommand.
+* The current version of `changeTheme` is *NOT* an UndoableCommand.
 ** i.e. You cannot `undo` a `changeTheme` command.
 * Instead, just enter `cte THEME` to change the colour back!
 ====
