@@ -677,22 +677,6 @@ Instead, just enter `stc <your desired colour>` to change the colour back!
 ====
 // end::setTagColour[]
 
-// tag::changeTheme[]
-[[changeTheme]]
-==== Changing theme : `changeTheme` `[Since v1.5]`
-If you feel that the light theme is not for you, and you prefer to work on a darker interface,
-you can change the theme from the default LightTheme to DarkTheme with the 'changeTheme' command.
-
-Format: `changeTheme` +
-Alias: `ct`
-
-[NOTE]
-====
-The current version of `changTheme` is NOT an UndoableCommand. i.e. You cannot `undo` a `changeTheme` command.
-Instead, just enter `cte <your desired theme>` to change the colour back!
-====
-// end::changeTheme[]
-
 [[changeTheme]]
 // tag::changeTheme[]
 ==== Changing theme : `changeTheme` `[Since v1.5]`

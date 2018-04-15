@@ -1286,6 +1286,7 @@ public class TeamDisplay extends UiPart<Region> {
 The `Player Details` pane is implemented as `PlayerDetails` in the UI Component.
 It is called from `PlayerListPanel`. It renders `PlayerDetails.fxml` and displays the selected `PersonCard`.
 It calls the `Person` model and displays the fields in the `Person` model that are not displayed in the left panel.
+It contains the event handler method
 
 Code snippet from 'PlayerDetails' to show initialisation of UI component:
 
@@ -1301,6 +1302,8 @@ public class PlayerDetails extends UiPart<Region> {
         this.person = person;
         //....player details code...
     }
+
+
 
 }
 ----
@@ -1329,10 +1332,10 @@ which is a method in `UserPrefs`. +
 Below is the sequence diagram for how the `ChangeThemeCommand` works:
 
 .Interactions of the Logic Component with the UI and Model Components for the `changeTheme` Command
-image::ChangeThemeCommandDiagram.png[width="800"]
+image::ChangeThemeDiagram.png[width="800"]
 
 
-Code snippet from 'ChangThemeCommand':
+Code snippet from 'ChangeThemeCommand':
 
 [source, java]
 ----
@@ -1439,7 +1442,7 @@ public class SetCommand extends Command {
 The following sequence diagram shows how the set command operation works:
 
 .Interactions of the Logic Component with the UI and Model Components for the `setTagColour` Command
-image::SetTagCommandSequence.png[width="800"]
+image::SetTagCommandDiagram.png[width="800"]
 
 ===== Design Considerations
 ====== Aspect: Implementation of `Command` vs  `UndoableCommand`
